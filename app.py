@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory, abort
+from flask import Flask, request, jsonify, send_from_directory, abort, Response
 import os, json, uuid, hashlib
 from datetime import datetime
 
@@ -31,9 +31,9 @@ def load_script(sid):
     with open(path) as f:
         return f.read()
 
-def is_roblox(req):
+def is_browser(req):
     ua = req.headers.get("User-Agent", "").lower()
-    return "roblox" in ua
+    return any(x in ua for x in ("mozilla", "chrome", "safari", "firefox", "opera", "edge"))
 
 @app.route("/")
 def index():
@@ -44,14 +44,12 @@ def view_page(sid):
     meta = load_meta(sid)
     if not meta:
         abort(404)
-    if is_roblox(request):
-        if meta.get("anti_skid"):
-            return "-- Access denied.", 403, {"Content-Type": "text/plain; charset=utf-8"}
-        content = load_script(sid)
-        if content is None:
-            abort(404)
-        return content, 200, {"Content-Type": "text/plain; charset=utf-8"}
-    return send_from_directory("static", "view.html")
+    if is_browser(request):
+        return send_from_directory("static", "view.html")
+    content = load_script(sid)
+    if content is None:
+        abort(404)
+    return content, 200, {"Content-Type": "text/plain; charset=utf-8"}
 
 @app.route("/raw/<sid>")
 def raw_script(sid):
