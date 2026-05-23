@@ -222,6 +222,12 @@
       <input type="password" id="pwInput" placeholder="Enter password..." />
     </div>
 
+    <label class="pw-toggle" id="asToggle">
+      <input type="checkbox" id="asCheck">
+      <div class="toggle-box"></div>
+      Anti-Skid — block raw access
+    </label>
+
     <button class="btn btn-primary" id="uploadBtn" onclick="uploadScript()">Upload Script</button>
     <div class="error-msg" id="errMsg"></div>
   </div>
@@ -262,11 +268,18 @@
 <script>
 const pwToggle = document.getElementById('pwToggle');
 const pwCheck = document.getElementById('pwCheck');
+const asToggle = document.getElementById('asToggle');
+const asCheck = document.getElementById('asCheck');
 
 pwToggle.addEventListener('click', () => {
   pwCheck.checked = !pwCheck.checked;
   pwToggle.classList.toggle('active', pwCheck.checked);
   document.getElementById('pwField').style.display = pwCheck.checked ? 'block' : 'none';
+});
+
+asToggle.addEventListener('click', () => {
+  asCheck.checked = !asCheck.checked;
+  asToggle.classList.toggle('active', asCheck.checked);
 });
 
 async function uploadScript() {
@@ -277,6 +290,7 @@ async function uploadScript() {
   const code = document.getElementById('codeArea').value.trim();
   const title = document.getElementById('titleInput').value.trim() || 'Untitled Script';
   const password = pwCheck.checked ? document.getElementById('pwInput').value : '';
+  const anti_skid = asCheck.checked;
 
   if (!code) { showError('Code cannot be empty'); return; }
 
@@ -287,7 +301,7 @@ async function uploadScript() {
     const res = await fetch('/api/upload', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({code, title, password})
+      body: JSON.stringify({code, title, password, anti_skid})
     });
     const data = await res.json();
     if (!res.ok) { showError(data.error || 'Upload failed'); return; }
