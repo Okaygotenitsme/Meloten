@@ -3,272 +3,304 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ScriptHost - BEST Roblox Script Hosting!!</title>
+<title>ScriptHost</title>
 <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
   body {
-    background: linear-gradient(135deg, #1a0033, #000066, #1a0033);
-    color: #ffffff;
-    font-family: "Comic Sans MS", "Chalkboard SE", cursive;
+    background: #0f0f0f;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
     min-height: 100vh;
-    margin: 0;
-    padding: 20px;
-    background-attachment: fixed;
+    padding: 32px 16px 60px;
   }
-  .marquee-wrap {
-    background: #ff0066;
-    padding: 6px;
-    margin-bottom: 20px;
-    border: 3px solid #ffff00;
-    font-size: 14px;
-    font-weight: bold;
-    color: #ffff00;
-    overflow: hidden;
-    white-space: nowrap;
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
   }
-  .marquee-inner {
-    display: inline-block;
-    animation: marquee 18s linear infinite;
+
+  header {
+    margin-bottom: 36px;
   }
-  @keyframes marquee { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
-  h1 {
-    text-align: center;
-    font-size: 42px;
-    color: #00ffff;
-    text-shadow: 3px 3px 0px #ff00ff, 6px 6px 0px #0000ff;
-    margin-bottom: 5px;
-    letter-spacing: 2px;
-  }
-  .subtitle {
-    text-align: center;
-    color: #ffff00;
-    font-size: 14px;
-    margin-bottom: 30px;
-    animation: blink 1.2s step-end infinite;
-  }
-  @keyframes blink { 50% { opacity: 0; } }
-  .stars {
-    text-align: center;
+
+  .site-name {
     font-size: 22px;
-    margin-bottom: 25px;
-    letter-spacing: 4px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.3px;
   }
-  .box {
-    background: rgba(0, 0, 80, 0.85);
-    border: 3px solid #00ffff;
-    border-radius: 4px;
-    padding: 20px;
-    max-width: 700px;
-    margin: 0 auto 25px auto;
-    box-shadow: 0 0 18px #00ffff55, inset 0 0 10px #00003355;
+
+  .site-name span {
+    color: #5b8cff;
   }
-  .box-title {
-    color: #ff00ff;
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 14px;
-    border-bottom: 2px dashed #ff00ff;
-    padding-bottom: 6px;
+
+  .tagline {
+    color: #555;
+    font-size: 13px;
+    margin-top: 4px;
   }
+
+  .card {
+    background: #181818;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 18px;
+  }
+
   label {
     display: block;
-    color: #00ff99;
     font-size: 13px;
-    margin-bottom: 5px;
-    font-weight: bold;
+    color: #aaa;
+    margin-bottom: 6px;
+    margin-top: 14px;
   }
-  input[type="text"], input[type="password"], textarea {
+
+  label:first-of-type { margin-top: 0; }
+
+  input[type="text"],
+  input[type="password"],
+  textarea {
     width: 100%;
-    background: #000033;
-    border: 2px solid #0099ff;
-    color: #00ff99;
-    font-family: "Courier New", monospace;
+    background: #111;
+    border: 1px solid #2e2e2e;
+    border-radius: 7px;
+    color: #e0e0e0;
+    font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
     font-size: 13px;
-    padding: 8px 10px;
-    margin-bottom: 14px;
-    box-sizing: border-box;
-    border-radius: 3px;
+    padding: 10px 12px;
     outline: none;
+    transition: border-color 0.15s;
   }
-  input:focus, textarea:focus { border-color: #ff00ff; }
-  textarea { min-height: 220px; resize: vertical; line-height: 1.5; }
+
+  input:focus, textarea:focus {
+    border-color: #5b8cff;
+  }
+
+  textarea {
+    min-height: 220px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+
   .toggle-row {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 14px;
+    margin-top: 14px;
     cursor: pointer;
     user-select: none;
   }
+
   .toggle-box {
-    width: 38px; height: 20px;
-    background: #000033;
-    border: 2px solid #0099ff;
+    width: 36px;
+    height: 20px;
+    background: #222;
+    border: 1px solid #333;
     border-radius: 10px;
     position: relative;
-    transition: background 0.2s;
     flex-shrink: 0;
+    transition: background 0.2s, border-color 0.2s;
   }
+
   .toggle-box::after {
     content: '';
     position: absolute;
-    left: 3px; top: 3px;
-    width: 10px; height: 10px;
-    background: #0099ff;
+    left: 3px;
+    top: 3px;
+    width: 12px;
+    height: 12px;
+    background: #555;
     border-radius: 50%;
-    transition: transform 0.2s;
+    transition: transform 0.2s, background 0.2s;
   }
-  .toggle-row.active .toggle-box { background: #003300; border-color: #00ff99; }
-  .toggle-row.active .toggle-box::after { background: #00ff99; transform: translateX(18px); }
+
+  .toggle-row.active .toggle-box {
+    background: #1a2e5a;
+    border-color: #5b8cff;
+  }
+
+  .toggle-row.active .toggle-box::after {
+    background: #5b8cff;
+    transform: translateX(16px);
+  }
+
   .toggle-row input { display: none; }
-  .toggle-label { color: #ffff00; font-size: 13px; }
-  #pwField { display: none; }
+
+  .toggle-label {
+    font-size: 13px;
+    color: #ccc;
+  }
+
+  #pwField { display: none; margin-top: 14px; }
+
   .btn-upload {
     width: 100%;
-    padding: 14px;
-    background: linear-gradient(90deg, #ff0066, #ff6600, #ffff00, #00ff00, #0099ff, #ff00ff);
-    background-size: 300% 100%;
-    animation: rainbow 3s linear infinite;
+    padding: 12px;
+    background: #5b8cff;
     border: none;
-    color: #000;
-    font-family: "Comic Sans MS", cursive;
-    font-size: 17px;
-    font-weight: bold;
+    border-radius: 8px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
-    border-radius: 5px;
-    letter-spacing: 1px;
-    text-shadow: none;
+    margin-top: 20px;
+    transition: background 0.15s, opacity 0.15s;
   }
-  @keyframes rainbow { 0%{background-position:0%} 100%{background-position:300%} }
-  .btn-upload:hover { opacity: 0.85; transform: scale(1.02); }
-  .btn-upload:disabled { opacity: 0.5; cursor: not-allowed; transform: none; animation: none; background: #444; }
-  .error-msg { color: #ff4444; font-size: 13px; margin-top: 8px; display: none; }
-  .result-box {
-    background: rgba(0, 40, 0, 0.9);
-    border: 3px solid #00ff00;
-    border-radius: 4px;
-    padding: 20px;
-    max-width: 700px;
-    margin: 0 auto 25px auto;
+
+  .btn-upload:hover { background: #4a7af0; }
+  .btn-upload:disabled { opacity: 0.4; cursor: not-allowed; background: #5b8cff; }
+
+  .error-msg {
+    color: #f87171;
+    font-size: 13px;
+    margin-top: 10px;
     display: none;
-    box-shadow: 0 0 20px #00ff0044;
   }
-  .result-title {
-    color: #00ff00;
-    font-size: 16px;
-    font-weight: bold;
+
+  .result-box {
+    background: #181818;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 24px;
     margin-bottom: 16px;
+    display: none;
   }
-  .url-label { color: #aaaaaa; font-size: 11px; margin-bottom: 4px; font-family: "Courier New", monospace; }
-  .url-row { display: flex; gap: 8px; margin-bottom: 12px; }
+
+  .result-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6ee7b7;
+    margin-bottom: 18px;
+  }
+
+  .url-label {
+    font-size: 11px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+  }
+
+  .url-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
   .url-box {
     flex: 1;
-    background: #001100;
-    border: 1px solid #00ff00;
-    border-radius: 3px;
-    padding: 8px 10px;
-    font-family: "Courier New", monospace;
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-family: 'Cascadia Code', 'Consolas', monospace;
     font-size: 12px;
-    color: #00ff99;
+    color: #aaa;
     word-break: break-all;
-  }
-  .copy-btn {
-    padding: 8px 14px;
-    background: #004400;
-    border: 1px solid #00ff00;
-    color: #00ff00;
-    font-family: "Comic Sans MS", cursive;
-    font-size: 11px;
     cursor: pointer;
-    border-radius: 3px;
+  }
+
+  .url-box.ls { color: #93c5fd; }
+
+  .copy-btn {
+    padding: 9px 14px;
+    background: #222;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #aaa;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
     white-space: nowrap;
     flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
   }
-  .copy-btn:hover { background: #006600; }
-  .copy-btn.copied { background: #00aa00; color: #fff; }
-  .divider { border: none; border-top: 2px dashed #00ff0066; margin: 14px 0; }
-  .ls-box { color: #ffff00; }
-  .footer {
-    text-align: center;
-    color: #555;
-    font-size: 11px;
-    font-family: "Courier New", monospace;
-    margin-top: 30px;
+
+  .copy-btn:hover { background: #2a2a2a; color: #fff; }
+  .copy-btn.copied { background: #1a3a2a; border-color: #4ade80; color: #4ade80; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #222;
+    margin: 14px 0;
   }
-  .counter { color: #ff00ff; text-align: center; font-size: 12px; margin-bottom: 10px; }
-  .tip { background: #110022; border-left: 4px solid #ff00ff; padding: 8px 12px; font-size: 12px; color: #cc99ff; margin-bottom: 20px; max-width: 700px; margin-left: auto; margin-right: auto; }
 </style>
 </head>
 <body>
+<div class="container">
 
-<div class="marquee-wrap">
-  <span class="marquee-inner">🌟 WELCOME TO SCRIPTHOST!! 🌟 THE BEST PLACE TO HOST YOUR ROBLOX SCRIPTS!! 🌟 100% FREE!! 🌟 NO VIRUSES I PROMISE!! 🌟 MADE WITH LOVE 🌟</span>
-</div>
+  <header>
+    <div class="site-name">Script<span>Host</span></div>
+    <div class="tagline">Host your Roblox scripts for free</div>
+  </header>
 
-<h1>⚡ ScriptHost ⚡</h1>
-<div class="subtitle">★ THE #1 ROBLOX SCRIPT HOSTING WEBSITE (probably) ★</div>
-<div class="stars">★ ★ ★ ★ ★</div>
+  <div class="card">
+    <div class="card-title">Upload Script</div>
 
-<div class="tip">
-  💡 <b>HOW TO USE:</b> paste ur script below then click the big button!! then copy the loadstring and put it in ur executor!! its that easy omg!!
-</div>
+    <label>Script Name</label>
+    <input type="text" id="titleInput" placeholder="Untitled Script" />
 
-<div class="box">
-  <div class="box-title">📝 Upload Your Script!!</div>
+    <label>Lua Code</label>
+    <textarea id="codeArea" placeholder="-- paste your script here&#10;print('hello world')"></textarea>
 
-  <label>Script Name (optional i guess)</label>
-  <input type="text" id="titleInput" placeholder="my super cool script v2 FINAL" />
+    <label class="toggle-row" id="pwToggle">
+      <input type="checkbox" id="pwCheck">
+      <div class="toggle-box"></div>
+      <span class="toggle-label">Password protect</span>
+    </label>
+    <div id="pwField">
+      <label>Password</label>
+      <input type="password" id="pwInput" placeholder="Enter password..." />
+    </div>
 
-  <label>Your Lua Code!! (paste here!!)</label>
-  <textarea id="codeArea" placeholder="-- paste ur script here&#10;-- it will work trust me&#10;print('hello world')"></textarea>
+    <label class="toggle-row" id="asToggle">
+      <input type="checkbox" id="asCheck">
+      <div class="toggle-box"></div>
+      <span class="toggle-label">Anti-Skid (hides source code from others)</span>
+    </label>
 
-  <label class="toggle-row" id="pwToggle">
-    <input type="checkbox" id="pwCheck">
-    <div class="toggle-box"></div>
-    <span class="toggle-label">🔒 add password (so ur friends cant steal it)</span>
-  </label>
-  <div id="pwField">
-    <label>Password</label>
-    <input type="password" id="pwInput" placeholder="dont use 1234 lol" />
+    <button class="btn-upload" id="uploadBtn" onclick="uploadScript()">Upload Script</button>
+    <div class="error-msg" id="errMsg"></div>
   </div>
 
-  <label class="toggle-row" id="asToggle">
-    <input type="checkbox" id="asCheck">
-    <div class="toggle-box"></div>
-    <span class="toggle-label">🛡️ Anti-Skid (blocks people from stealing ur script!!)</span>
-  </label>
+  <div class="result-box" id="resultCard">
+    <div class="result-title">Script uploaded successfully</div>
 
-  <button class="btn-upload" id="uploadBtn" onclick="uploadScript()">🚀 UPLOAD SCRIPT NOW!! 🚀</button>
-  <div class="error-msg" id="errMsg"></div>
-</div>
-
-<div class="result-box" id="resultCard">
-  <div class="result-title">✅ IT WORKED!! ur script is uploaded!!</div>
-
-  <div class="url-label">VIEW PAGE (share this with friends!!)</div>
-  <div class="url-row">
-    <div class="url-box" id="viewUrl" onclick="window.open(this.dataset.href,'_blank')" style="cursor:pointer"></div>
-    <button class="copy-btn" id="btn-view" onclick="copyAndMark('viewUrl','btn-view')">copy!!</button>
-  </div>
-
-  <div id="rawRow">
-    <div class="url-label">RAW URL</div>
+    <div class="url-label">View Page</div>
     <div class="url-row">
-      <div class="url-box" id="rawUrl"></div>
-      <button class="copy-btn" id="btn-raw" onclick="copyAndMark('rawUrl','btn-raw')">copy!!</button>
+      <div class="url-box" id="viewUrl" onclick="window.open(this.dataset.href,'_blank')" style="cursor:pointer"></div>
+      <button class="copy-btn" id="btn-view" onclick="copyAndMark('viewUrl','btn-view')">Copy</button>
+    </div>
+
+    <div id="rawRow">
+      <div class="url-label">Raw URL</div>
+      <div class="url-row">
+        <div class="url-box" id="rawUrl"></div>
+        <button class="copy-btn" id="btn-raw" onclick="copyAndMark('rawUrl','btn-raw')">Copy</button>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="url-label">Loadstring</div>
+    <div class="url-row">
+      <div class="url-box ls" id="lsCode"></div>
+      <button class="copy-btn" id="btn-ls" onclick="copyAndMark('lsCode','btn-ls')">Copy</button>
     </div>
   </div>
 
-  <hr class="divider">
-
-  <div class="url-label">LOADSTRING - paste this in ur executor!!! 🎮</div>
-  <div class="url-row">
-    <div class="url-box ls-box" id="lsCode"></div>
-    <button class="copy-btn" id="btn-ls" onclick="copyAndMark('lsCode','btn-ls')">copy!!</button>
-  </div>
-</div>
-
-<div class="footer">
-  ScriptHost v1.0 | made by me | please dont hack my site
 </div>
 
 <script>
@@ -298,10 +330,10 @@ async function uploadScript() {
   const password = pwCheck.checked ? document.getElementById('pwInput').value : '';
   const anti_skid = asCheck.checked;
 
-  if (!code) { showError('bro u forgot to paste ur script lol'); return; }
+  if (!code) { showError('Paste your script first.'); return; }
 
   btn.disabled = true;
-  btn.textContent = 'uploading please wait...';
+  btn.textContent = 'Uploading...';
 
   try {
     const res = await fetch('/api/upload', {
@@ -310,7 +342,7 @@ async function uploadScript() {
       body: JSON.stringify({code, title, password, anti_skid})
     });
     const data = await res.json();
-    if (!res.ok) { showError(data.error || 'something broke idk'); return; }
+    if (!res.ok) { showError(data.error || 'Something went wrong.'); return; }
 
     const base = window.location.origin;
     const viewFull = base + data.view_url;
@@ -335,10 +367,10 @@ async function uploadScript() {
     card.style.display = 'block';
     card.scrollIntoView({behavior: 'smooth', block: 'nearest'});
   } catch(e) {
-    showError('network error or something idk try again');
+    showError('Network error, try again.');
   } finally {
     btn.disabled = false;
-    btn.textContent = '🚀 UPLOAD SCRIPT NOW!! 🚀';
+    btn.textContent = 'Upload Script';
   }
 }
 
@@ -346,19 +378,19 @@ function copyAndMark(elId, btnId) {
   const text = document.getElementById(elId).textContent;
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById(btnId);
-    btn.textContent = 'copied!!';
+    btn.textContent = 'Copied!';
     btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'copy!!'; btn.classList.remove('copied'); }, 1500);
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
   });
 }
 
 function showError(msg) {
   const err = document.getElementById('errMsg');
-  err.textContent = '❌ ' + msg;
+  err.textContent = msg;
   err.style.display = 'block';
   const btn = document.getElementById('uploadBtn');
   btn.disabled = false;
-  btn.textContent = '🚀 UPLOAD SCRIPT NOW!! 🚀';
+  btn.textContent = 'Upload Script';
 }
 </script>
 </body>
