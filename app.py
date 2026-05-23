@@ -58,12 +58,31 @@ def view_page(sid):
     meta = load_meta(sid)
     if not meta:
         abort(404)
-    if meta.get("anti_skid"):
-        content = load_script(sid)
-        if content is None:
-            abort(404)
-        return content, 200, {"Content-Type": "text/plain; charset=utf-8"}
     return send_from_directory("static", "view.html")
+
+@app.route("/script/<sid>")
+def script_file(sid):
+    meta = load_meta(sid)
+    if not meta:
+        abort(404)
+    if not meta.get("anti_skid"):
+        abort(404)
+    content = load_script(sid)
+    if content is None:
+        abort(404)
+    return content, 200, {"Content-Type": "text/plain; charset=utf-8"}
+
+@app.route("/raw/<sid>")
+def raw_script(sid):
+    meta = load_meta(sid)
+    if not meta:
+        abort(404)
+    if meta.get("anti_skid"):
+        abort(404)
+    content = load_script(sid)
+    if content is None:
+        abort(404)
+    return content, 200, {"Content-Type": "text/plain; charset=utf-8"}
 
 @app.route("/api/upload", methods=["POST"])
 def upload():
@@ -88,21 +107,11 @@ def upload():
     else:
         save_script(sid, code)
     result = {"id": sid, "view_url": f"/view/{sid}"}
-    if not anti_skid:
+    if anti_skid:
+        result["script_url"] = f"/script/{sid}"
+    else:
         result["raw_url"] = f"/raw/{sid}"
     return jsonify(result)
-
-@app.route("/raw/<sid>")
-def raw_script(sid):
-    meta = load_meta(sid)
-    if not meta:
-        abort(404)
-    if meta.get("anti_skid"):
-        abort(404)
-    content = load_script(sid)
-    if content is None:
-        abort(404)
-    return content, 200, {"Content-Type": "text/plain; charset=utf-8"}
 
 @app.route("/api/meta/<sid>")
 def get_meta(sid):
