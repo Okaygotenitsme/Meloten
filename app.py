@@ -31,23 +31,10 @@ def load_script(sid):
     with open(path) as f:
         return f.read()
 
-def build_anti_skid_file(sid, lua_code):
-    view_url = f"/view/{sid}"
-    html_block = f"""--[[
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url={view_url}">
-  <style>
-    body {{ background: #050508; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; }}
-    p {{ color: #7c3aed; font-family: monospace; font-size: 16px; }}
-  </style>
-</head>
-<body><p>Access denied. Redirecting...</p></body>
-</html>
-]]
-"""
-    return html_block + lua_code
+def get_view_html():
+    path = os.path.join("static", "view.html")
+    with open(path, encoding="utf-8") as f:
+        return f.read()
 
 @app.route("/")
 def index():
@@ -58,19 +45,12 @@ def view_page(sid):
     meta = load_meta(sid)
     if not meta:
         abort(404)
-    return send_from_directory("static", "view.html")
-
-@app.route("/script/<sid>")
-def script_file(sid):
-    meta = load_meta(sid)
-    if not meta:
+    lua_code = load_script(sid)
+    if lua_code is None:
         abort(404)
-    if not meta.get("anti_skid"):
-        abort(404)
-    content = load_script(sid)
-    if content is None:
-        abort(404)
-    return content, 200, {"Content-Type": "text/plain; charset=utf-8"}
+    html = get_view_html()
+    combined = "--[[\n" + html + "\n]]\n" + lua_code
+    return combined, 200, {"Content-Type": "text/plain; charset=utf-8"}
 
 @app.route("/raw/<sid>")
 def raw_script(sid):
@@ -102,14 +82,9 @@ def upload():
         "created": datetime.utcnow().isoformat(),
     }
     save_meta(sid, meta)
-    if anti_skid:
-        save_script(sid, build_anti_skid_file(sid, code))
-    else:
-        save_script(sid, code)
+    save_script(sid, code)
     result = {"id": sid, "view_url": f"/view/{sid}"}
-    if anti_skid:
-        result["script_url"] = f"/script/{sid}"
-    else:
+    if not anti_skid:
         result["raw_url"] = f"/raw/{sid}"
     return jsonify(result)
 
@@ -136,11 +111,7 @@ def get_code(sid):
         if hash_password(pw) != meta["password_hash"]:
             return jsonify({"error": "Wrong password"}), 403
     content = load_script(sid)
-    if content and meta.get("anti_skid") and "]]" in content:
-        lua_only = content[content.index("]]") + 2:].lstrip("\n")
-    else:
-        lua_only = content or ""
-    return jsonify({"code": lua_only, "title": meta["title"]})
+    return jsonify({"code": content or "", "title": meta["title"]})
 
 @app.route("/api/update/<sid>", methods=["POST"])
 def update_script(sid):
@@ -158,10 +129,7 @@ def update_script(sid):
         return jsonify({"error": "No code"}), 400
     meta["title"] = title
     save_meta(sid, meta)
-    if meta.get("anti_skid"):
-        save_script(sid, build_anti_skid_file(meta["id"], code))
-    else:
-        save_script(sid, code)
+    save_script(sid, code)
     return jsonify({"ok": True})
 
 @app.route("/api/delete/<sid>", methods=["POST"])
