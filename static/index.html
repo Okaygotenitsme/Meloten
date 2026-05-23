@@ -308,7 +308,7 @@ async function uploadScript() {
 
     const base = window.location.origin;
     const viewFull = base + data.view_url;
-    const lsTarget = anti_skid ? viewFull : (base + data.raw_url);
+    const lsTarget = anti_skid ? (base + data.script_url) : (base + data.raw_url);
     const ls = `loadstring(game:HttpGet("${lsTarget}"))()`;
 
     const viewEl = document.getElementById('viewUrl');
