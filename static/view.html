@@ -5,298 +5,354 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ScriptHost - View Script</title>
 <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
   body {
-    background: linear-gradient(135deg, #1a0033, #000066, #1a0033);
-    color: #ffffff;
-    font-family: "Comic Sans MS", "Chalkboard SE", cursive;
+    background: #0f0f0f;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
     min-height: 100vh;
-    margin: 0;
-    padding: 20px;
-    background-attachment: fixed;
+    padding: 32px 16px 60px;
   }
-  .marquee-wrap {
-    background: #ff0066;
-    padding: 6px;
-    margin-bottom: 20px;
-    border: 3px solid #ffff00;
-    font-size: 14px;
-    font-weight: bold;
-    color: #ffff00;
-    overflow: hidden;
-    white-space: nowrap;
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
   }
-  .marquee-inner {
-    display: inline-block;
-    animation: marquee 18s linear infinite;
-  }
-  @keyframes marquee { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+
   .back-link {
-    display: inline-block;
-    color: #00ffff;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #555;
     text-decoration: none;
     font-size: 13px;
-    margin-bottom: 16px;
-    border: 1px solid #00ffff;
-    padding: 4px 10px;
-    border-radius: 3px;
+    margin-bottom: 24px;
+    transition: color 0.15s;
   }
-  .back-link:hover { background: #00ffff22; }
-  .box {
-    background: rgba(0, 0, 80, 0.85);
-    border: 3px solid #00ffff;
-    border-radius: 4px;
-    padding: 20px;
-    max-width: 750px;
-    margin: 0 auto 20px auto;
-    box-shadow: 0 0 18px #00ffff55;
+
+  .back-link:hover { color: #aaa; }
+
+  .card {
+    background: #181818;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 14px;
   }
+
   .script-title {
-    font-size: 26px;
-    color: #00ffff;
-    text-shadow: 2px 2px 0 #ff00ff;
-    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
     word-break: break-word;
+    margin-bottom: 10px;
   }
-  .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+
+  .script-id {
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    font-size: 11px;
+    color: #3a3a3a;
+    margin-bottom: 12px;
+  }
+
+  .badges {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+
   .badge {
-    font-family: "Courier New", monospace;
     font-size: 11px;
     padding: 3px 10px;
     border-radius: 20px;
     border: 1px solid;
+    font-family: 'Segoe UI', system-ui, sans-serif;
   }
-  .badge-lock { color: #ffcc00; border-color: #ffcc00; background: rgba(255,204,0,0.1); }
-  .badge-open { color: #00ff99; border-color: #00ff99; background: rgba(0,255,153,0.1); }
-  .badge-date { color: #aaaaaa; border-color: #444; }
-  .badge-antiskid { color: #ff6600; border-color: #ff6600; background: rgba(255,102,0,0.1); }
-  .pw-section { display: none; margin-bottom: 16px; }
+
+  .badge-lock   { color: #fbbf24; border-color: #3a2e00; background: #1a1500; }
+  .badge-open   { color: #6ee7b7; border-color: #0a2a1a; background: #071510; }
+  .badge-date   { color: #555; border-color: #222; }
+  .badge-antiskid { color: #fb923c; border-color: #2a1500; background: #150a00; }
+
+  .pw-section { display: none; margin-bottom: 18px; }
   .pw-section.visible { display: block; }
-  label {
+
+  .field-label {
     display: block;
-    color: #00ff99;
-    font-size: 13px;
-    margin-bottom: 5px;
-    font-weight: bold;
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
+
   .pw-row { display: flex; gap: 8px; }
+
   input[type="password"] {
     flex: 1;
-    background: #000033;
-    border: 2px solid #0099ff;
-    color: #00ff99;
-    font-family: "Courier New", monospace;
+    background: #111;
+    border: 1px solid #2e2e2e;
+    border-radius: 7px;
+    color: #e0e0e0;
+    font-family: 'Cascadia Code', 'Consolas', monospace;
     font-size: 13px;
-    padding: 8px 10px;
-    border-radius: 3px;
+    padding: 10px 12px;
     outline: none;
+    transition: border-color 0.15s;
   }
-  input:focus { border-color: #ff00ff; }
+
+  input:focus { border-color: #5b8cff; }
+
   .btn {
-    padding: 8px 18px;
-    border: none;
-    border-radius: 3px;
-    font-family: "Comic Sans MS", cursive;
+    padding: 9px 16px;
+    border: 1px solid;
+    border-radius: 7px;
+    font-family: inherit;
     font-size: 13px;
-    font-weight: bold;
+    font-weight: 500;
     cursor: pointer;
     white-space: nowrap;
+    transition: background 0.15s;
   }
-  .btn-primary { background: #0055cc; color: #fff; border: 2px solid #0099ff; }
-  .btn-primary:hover { background: #0077ff; }
-  .btn-danger { background: #440000; color: #ff4444; border: 2px solid #ff4444; }
-  .btn-danger:hover { background: #660000; }
-  .btn-secondary { background: #002244; color: #aaccff; border: 2px solid #0055aa; }
-  .btn-secondary:hover { background: #003366; }
-  .code-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
-  .code-label { color: #ff00ff; font-size: 13px; font-weight: bold; }
-  .code-actions { display: flex; gap: 6px; }
-  pre {
-    background: #000022;
-    border: 2px solid #0055aa;
-    border-radius: 3px;
-    padding: 14px;
-    font-family: "Courier New", monospace;
-    font-size: 12px;
-    color: #00ff99;
-    line-height: 1.6;
-    white-space: pre-wrap;
-    word-break: break-all;
-    max-height: 400px;
-    overflow-y: auto;
-    display: none;
-  }
-  pre.visible { display: block; }
-  pre::-webkit-scrollbar { width: 4px; }
-  pre::-webkit-scrollbar-thumb { background: #0055aa; }
+
+  .btn-primary   { background: #5b8cff; border-color: #5b8cff; color: #fff; }
+  .btn-primary:hover { background: #4a7af0; border-color: #4a7af0; }
+
+  .btn-secondary { background: #222; border-color: #333; color: #aaa; }
+  .btn-secondary:hover { background: #2a2a2a; color: #fff; }
+
+  .btn-danger    { background: #1a0808; border-color: #4a1010; color: #f87171; }
+  .btn-danger:hover { background: #2a0a0a; }
+
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+
   .locked-msg {
     text-align: center;
     padding: 40px 20px;
-    color: #aaaaaa;
-    font-family: "Courier New", monospace;
+    color: #444;
     font-size: 13px;
   }
-  .locked-msg .icon { font-size: 36px; margin-bottom: 10px; }
+
+  .locked-icon { font-size: 32px; margin-bottom: 10px; }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .code-label {
+    font-size: 12px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  .code-actions { display: flex; gap: 6px; }
+
+  pre {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 7px;
+    padding: 14px;
+    font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+    font-size: 12px;
+    color: #b0d0ff;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 420px;
+    overflow-y: auto;
+    display: none;
+  }
+
+  pre.visible { display: block; }
+
+  pre::-webkit-scrollbar { width: 4px; }
+  pre::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
   textarea.edit-area {
     display: none;
     width: 100%;
     min-height: 260px;
-    background: #000022;
-    border: 2px solid #ff00ff;
-    color: #00ff99;
-    font-family: "Courier New", monospace;
+    background: #111;
+    border: 1px solid #5b8cff;
+    border-radius: 7px;
+    color: #b0d0ff;
+    font-family: 'Cascadia Code', 'Consolas', monospace;
     font-size: 12px;
-    padding: 12px;
+    padding: 14px;
     resize: vertical;
     outline: none;
-    line-height: 1.6;
+    line-height: 1.65;
     margin-bottom: 10px;
-    box-sizing: border-box;
-    border-radius: 3px;
   }
+
   textarea.edit-area.visible { display: block; }
+
   .edit-actions { display: none; gap: 8px; margin-bottom: 10px; }
   .edit-actions.visible { display: flex; }
+
   .msg {
-    font-family: "Courier New", monospace;
     font-size: 12px;
     padding: 8px 12px;
-    border-radius: 3px;
+    border-radius: 6px;
     margin-top: 10px;
     display: none;
   }
-  .msg-error { background: rgba(255,0,0,0.1); color: #ff4444; border: 1px solid #ff4444; }
-  .msg-success { background: rgba(0,255,0,0.1); color: #00ff99; border: 1px solid #00ff99; }
-  .ls-box-wrap {
-    background: rgba(0, 20, 0, 0.9);
-    border: 2px solid #00ff00;
-    border-radius: 4px;
-    padding: 16px 20px;
-    max-width: 750px;
-    margin: 0 auto 20px auto;
-  }
-  .url-label { color: #aaaaaa; font-size: 11px; margin-bottom: 5px; font-family: "Courier New", monospace; }
-  .url-row { display: flex; gap: 8px; margin-bottom: 10px; }
-  .url-box {
-    flex: 1;
-    background: #001100;
-    border: 1px solid #00ff00;
-    border-radius: 3px;
-    padding: 8px 10px;
-    font-family: "Courier New", monospace;
-    font-size: 12px;
-    color: #00ff99;
-    word-break: break-all;
-    cursor: pointer;
-  }
-  .url-box.ls { color: #ffff00; }
-  .copy-btn {
-    padding: 8px 14px;
-    background: #004400;
-    border: 1px solid #00ff00;
-    color: #00ff00;
-    font-family: "Comic Sans MS", cursive;
-    font-size: 11px;
-    cursor: pointer;
-    border-radius: 3px;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .copy-btn:hover { background: #006600; }
-  .copy-btn.copied { background: #00aa00; color: #fff; }
-  .divider { border: none; border-top: 2px dashed #00ff0055; margin: 12px 0; }
-  .deleted-box {
-    text-align: center;
-    padding: 50px 20px;
-    display: none;
-    background: rgba(0,0,80,0.85);
-    border: 3px solid #ff4444;
-    border-radius: 4px;
-    max-width: 750px;
-    margin: 0 auto;
-  }
-  .deleted-box .icon { font-size: 48px; margin-bottom: 14px; }
-  .deleted-box p { color: #aaaaaa; font-family: "Courier New", monospace; font-size: 13px; }
-  .script-id-badge {
-    font-family: "Courier New", monospace;
-    font-size: 11px;
-    color: #555;
+
+  .msg-error   { background: #1a0808; color: #f87171; border: 1px solid #4a1010; }
+  .msg-success { background: #071510; color: #6ee7b7; border: 1px solid #0a2a1a; }
+
+  .ls-card {
+    background: #181818;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 24px;
     margin-bottom: 14px;
   }
+
+  .url-label {
+    font-size: 11px;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+  }
+
+  .url-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .url-box {
+    flex: 1;
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    font-size: 12px;
+    color: #888;
+    word-break: break-all;
+  }
+
+  .url-box.ls { color: #93c5fd; }
+
+  .copy-btn {
+    padding: 9px 14px;
+    background: #222;
+    border: 1px solid #2e2e2e;
+    border-radius: 6px;
+    color: #aaa;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .copy-btn:hover { background: #2a2a2a; color: #fff; }
+  .copy-btn.copied { background: #071510; border-color: #0a2a1a; color: #4ade80; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #1e1e1e;
+    margin: 14px 0;
+  }
+
+  .deleted-box {
+    text-align: center;
+    padding: 60px 20px;
+    display: none;
+    background: #181818;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+  }
+
+  .deleted-box .icon { font-size: 40px; margin-bottom: 14px; }
+  .deleted-box p { color: #555; font-size: 13px; }
 </style>
 </head>
 <body>
+<div class="container">
 
-<div class="marquee-wrap">
-  <span class="marquee-inner">🌟 WELCOME TO SCRIPTHOST!! 🌟 THE BEST PLACE TO HOST YOUR ROBLOX SCRIPTS!! 🌟 100% FREE!! 🌟 NO VIRUSES I PROMISE!! 🌟</span>
-</div>
+  <a class="back-link" href="/">← Back to ScriptHost</a>
 
-<a class="back-link" href="/">← go back to home</a>
+  <div id="mainContent">
+    <div class="card" id="infoCard">
+      <div class="script-title" id="scriptTitle">Loading...</div>
+      <div class="script-id" id="scriptIdBadge"></div>
+      <div class="badges" id="metaBadges"></div>
 
-<div id="mainContent">
-  <div class="box" id="infoCard">
-    <div class="script-title" id="scriptTitle">loading ur script...</div>
-    <div class="script-id-badge" id="scriptIdBadge"></div>
-    <div class="badges" id="metaBadges"></div>
-
-    <div class="pw-section" id="pwSection">
-      <label>🔒 password required!! enter it here:</label>
-      <div class="pw-row">
-        <input type="password" id="pwInput" placeholder="enter password..." onkeydown="if(event.key==='Enter')unlockScript()">
-        <button class="btn btn-primary" onclick="unlockScript()">Unlock!!</button>
-      </div>
-      <div class="msg msg-error" id="pwErr"></div>
-    </div>
-
-    <div id="lockedMsg" class="locked-msg">
-      <div class="icon">🔒</div>
-      <div>this script is password protected!! enter the password above to see it</div>
-    </div>
-
-    <div id="codeSection" style="display:none">
-      <div class="code-header">
-        <div class="code-label">📄 Source Code!!</div>
-        <div class="code-actions">
-          <button class="btn btn-secondary" id="editBtn" style="font-size:11px;padding:5px 12px" onclick="startEdit()">Edit</button>
-          <button class="btn btn-secondary" style="font-size:11px;padding:5px 12px" onclick="copyCode()">Copy</button>
-          <button class="btn btn-danger" id="deleteBtn" style="font-size:11px;padding:5px 12px" onclick="deleteScript()">Delete</button>
+      <div class="pw-section" id="pwSection">
+        <div class="field-label">Password required</div>
+        <div class="pw-row">
+          <input type="password" id="pwInput" placeholder="Enter password..." onkeydown="if(event.key==='Enter')unlockScript()">
+          <button class="btn btn-primary" onclick="unlockScript()">Unlock</button>
         </div>
+        <div class="msg msg-error" id="pwErr"></div>
       </div>
-      <pre class="visible" id="codeBlock"></pre>
-      <textarea class="edit-area" id="editArea"></textarea>
-      <div class="edit-actions" id="editActions">
-        <button class="btn btn-primary" onclick="saveEdit()">Save!!</button>
-        <button class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
+
+      <div id="lockedMsg" class="locked-msg">
+        <div class="locked-icon">🔒</div>
+        <div>This script is password protected. Enter the password above to view it.</div>
       </div>
-      <div class="msg" id="codeMsg"></div>
+
+      <div id="codeSection" style="display:none">
+        <div class="code-header">
+          <div class="code-label">Source Code</div>
+          <div class="code-actions">
+            <button class="btn btn-secondary btn-sm" id="editBtn" onclick="startEdit()">Edit</button>
+            <button class="btn btn-secondary btn-sm" onclick="copyCode()">Copy</button>
+            <button class="btn btn-danger btn-sm" id="deleteBtn" onclick="deleteScript()">Delete</button>
+          </div>
+        </div>
+        <pre class="visible" id="codeBlock"></pre>
+        <textarea class="edit-area" id="editArea"></textarea>
+        <div class="edit-actions" id="editActions">
+          <button class="btn btn-primary btn-sm" onclick="saveEdit()">Save</button>
+          <button class="btn btn-secondary btn-sm" onclick="cancelEdit()">Cancel</button>
+        </div>
+        <div class="msg" id="codeMsg"></div>
+      </div>
+    </div>
+
+    <div class="ls-card">
+      <div class="url-label">View Page</div>
+      <div class="url-row">
+        <div class="url-box" id="viewUrl" onclick="window.open(this.dataset.href,'_blank')" style="cursor:pointer"></div>
+        <button class="copy-btn" id="btn-view" onclick="copyAndMark('viewUrl','btn-view')">Copy</button>
+      </div>
+      <hr class="divider">
+      <div class="url-label">Loadstring</div>
+      <div class="url-row">
+        <div class="url-box ls" id="lsCode"></div>
+        <button class="copy-btn" id="btn-ls" onclick="copyAndMark('lsCode','btn-ls')">Copy</button>
+      </div>
+    </div>
+
+    <div class="deleted-box" id="deletedOverlay">
+      <div class="icon">🗑️</div>
+      <p>Script deleted.</p>
     </div>
   </div>
 
-  <div class="ls-box-wrap">
-    <div class="url-label">VIEW PAGE (share this!!)</div>
-    <div class="url-row">
-      <div class="url-box" id="viewUrl" onclick="window.open(this.dataset.href,'_blank')"></div>
-      <button class="copy-btn" id="btn-view" onclick="copyAndMark('viewUrl','btn-view')">copy!!</button>
-    </div>
-    <hr class="divider">
-    <div class="url-label">LOADSTRING - paste in executor!! 🎮</div>
-    <div class="url-row">
-      <div class="url-box ls" id="lsCode"></div>
-      <button class="copy-btn" id="btn-ls" onclick="copyAndMark('lsCode','btn-ls')">copy!!</button>
-    </div>
-  </div>
-
-  <div class="deleted-box" id="deletedOverlay">
-    <div class="icon">🗑️</div>
-    <p>script deleted!! its gone forever now lol</p>
-  </div>
 </div>
-
 <script>
 const sid = location.pathname.split('/').pop();
 let meta = null;
 let unlockedPw = '';
 
-document.getElementById('scriptIdBadge').textContent = 'script id: ' + sid;
+document.getElementById('scriptIdBadge').textContent = 'ID: ' + sid;
 const viewFull = location.origin + '/view/' + sid;
 const viewEl = document.getElementById('viewUrl');
 viewEl.textContent = viewFull;
@@ -304,13 +360,13 @@ viewEl.dataset.href = viewFull;
 
 async function init() {
   const res = await fetch('/api/meta/' + sid);
-  if (!res.ok) { document.getElementById('scriptTitle').textContent = 'script not found :('; return; }
+  if (!res.ok) { document.getElementById('scriptTitle').textContent = 'Script not found'; return; }
   meta = await res.json();
   document.getElementById('scriptTitle').textContent = meta.title;
-  document.title = meta.title + ' - ScriptHost';
+  document.title = meta.title + ' – ScriptHost';
   const d = new Date(meta.created).toLocaleDateString();
-  let badges = '<span class="badge ' + (meta.has_password ? 'badge-lock' : 'badge-open') + '">' + (meta.has_password ? '🔒 protected' : '🔓 public') + '</span>';
-  if (meta.anti_skid) badges += '<span class="badge badge-antiskid">🛡️ anti-skid</span>';
+  let badges = '<span class="badge ' + (meta.has_password ? 'badge-lock' : 'badge-open') + '">' + (meta.has_password ? 'Protected' : 'Public') + '</span>';
+  if (meta.anti_skid) badges += '<span class="badge badge-antiskid">Anti-Skid</span>';
   badges += '<span class="badge badge-date">' + d + '</span>';
   document.getElementById('metaBadges').innerHTML = badges;
 
@@ -332,7 +388,7 @@ async function loadCode(pw) {
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({password: pw})
   });
-  if (res.status === 403) { showMsg('pwErr', 'wrong password!! try again', 'error'); return false; }
+  if (res.status === 403) { showMsg('pwErr', 'Wrong password.', 'error'); return false; }
   const data = await res.json();
   document.getElementById('codeBlock').textContent = data.code;
   document.getElementById('editArea').value = data.code;
@@ -368,37 +424,37 @@ async function saveEdit() {
     body: JSON.stringify({code, password: unlockedPw, title: meta.title})
   });
   const data = await res.json();
-  if (!res.ok) { showMsg('codeMsg', data.error || 'something broke idk', 'error'); return; }
+  if (!res.ok) { showMsg('codeMsg', data.error || 'Something went wrong.', 'error'); return; }
   document.getElementById('codeBlock').textContent = code;
   cancelEdit();
-  showMsg('codeMsg', 'saved!! nice', 'success');
+  showMsg('codeMsg', 'Saved.', 'success');
 }
 
 async function deleteScript() {
-  if (!confirm('u sure u wanna delete this?? it cant be undone!!')) return;
+  if (!confirm('Delete this script? This cannot be undone.')) return;
   const res = await fetch('/api/delete/' + sid, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({password: unlockedPw})
   });
   const data = await res.json();
-  if (!res.ok) { showMsg('codeMsg', data.error || 'delete failed idk why', 'error'); return; }
+  if (!res.ok) { showMsg('codeMsg', data.error || 'Delete failed.', 'error'); return; }
   document.getElementById('infoCard').style.display = 'none';
-  document.querySelector('.ls-box-wrap').style.display = 'none';
+  document.querySelector('.ls-card').style.display = 'none';
   document.getElementById('deletedOverlay').style.display = 'block';
 }
 
 function copyCode() {
   navigator.clipboard.writeText(document.getElementById('codeBlock').textContent);
-  showMsg('codeMsg', 'copied!! nice', 'success');
+  showMsg('codeMsg', 'Copied.', 'success');
 }
 
 function copyAndMark(elId, btnId) {
   navigator.clipboard.writeText(document.getElementById(elId).textContent).then(() => {
     const btn = document.getElementById(btnId);
-    btn.textContent = 'copied!!';
+    btn.textContent = 'Copied!';
     btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'copy!!'; btn.classList.remove('copied'); }, 1500);
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
   });
 }
 
