@@ -33,7 +33,7 @@ def load_script(sid):
 
 def is_browser(req):
     ua = req.headers.get("User-Agent", "").lower()
-    return any(x in ua for x in ("mozilla", "chrome", "safari", "firefox", "opera", "edge"))
+    return "mozilla" in ua
 
 @app.route("/")
 def index():
