@@ -248,7 +248,7 @@ async function init() {
   badges += `<span class="badge badge-date">${d}</span>`;
   document.getElementById('metaBadges').innerHTML = badges;
 
-  const lsTarget = meta.anti_skid ? viewFull : `${location.origin}/raw/${sid}`;
+  const lsTarget = meta.anti_skid ? `${location.origin}/script/${sid}` : `${location.origin}/raw/${sid}`;
   document.getElementById('lsCode').textContent = `loadstring(game:HttpGet("${lsTarget}"))()`;
   if (!meta.has_password) {
     document.getElementById('editBtn').style.display = 'none';
