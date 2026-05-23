@@ -184,9 +184,9 @@
         <div class="code-header">
           <div class="code-label">Source Code</div>
           <div class="code-actions">
-            <button class="btn btn-secondary" id="editBtn" style="font-size:12px;padding:6px 14px" onclick="startEdit()">Edit</button>
+            <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px" onclick="startEdit()">Edit</button>
             <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px" onclick="copyCode()">Copy</button>
-            <button class="btn btn-danger" id="deleteBtn" style="font-size:12px;padding:6px 14px" onclick="deleteScript()">Delete</button>
+            <button class="btn btn-danger" style="font-size:12px;padding:6px 14px" onclick="deleteScript()">Delete</button>
           </div>
         </div>
         <pre class="code-block visible" id="codeBlock"></pre>
@@ -246,13 +246,11 @@ async function init() {
   document.getElementById('scriptTitle').textContent = meta.title;
   document.title = `${meta.title} — ScriptHost`;
   const d = new Date(meta.created).toLocaleDateString();
-  let badges = `<span class="badge ${meta.has_password ? 'badge-lock' : 'badge-open'}">${meta.has_password ? '🔒 protected' : '🔓 public'}</span>`;
-  if (meta.anti_skid) badges += `<span class="badge" style="color:#f97316;border-color:#f97316;background:rgba(249,115,22,0.08)">🛡 anti-skid</span>`;
-  badges += `<span class="badge badge-date">${d}</span>`;
-  document.getElementById('metaBadges').innerHTML = badges;
+  document.getElementById('metaBadges').innerHTML = `
+    <span class="badge ${meta.has_password ? 'badge-lock' : 'badge-open'}">${meta.has_password ? '🔒 protected' : '🔓 public'}</span>
+    <span class="badge badge-date">${d}</span>
+  `;
   if (!meta.has_password) {
-    document.getElementById('editBtn').style.display = 'none';
-    document.getElementById('deleteBtn').style.display = 'none';
     await loadCode('');
   } else {
     document.getElementById('pwSection').classList.add('visible');
