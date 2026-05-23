@@ -31,10 +31,9 @@ def load_script(sid):
     with open(path) as f:
         return f.read()
 
-def get_view_html():
-    path = os.path.join("static", "view.html")
-    with open(path, encoding="utf-8") as f:
-        return f.read()
+def is_roblox(req):
+    ua = req.headers.get("User-Agent", "").lower()
+    return "roblox" in ua
 
 @app.route("/")
 def index():
@@ -45,12 +44,14 @@ def view_page(sid):
     meta = load_meta(sid)
     if not meta:
         abort(404)
-    lua_code = load_script(sid)
-    if lua_code is None:
-        abort(404)
-    html = get_view_html()
-    combined = "--[[\n" + html + "\n]]\n" + lua_code
-    return combined, 200, {"Content-Type": "text/plain; charset=utf-8"}
+    if is_roblox(request):
+        if meta.get("anti_skid"):
+            return "-- Access denied.", 403, {"Content-Type": "text/plain; charset=utf-8"}
+        content = load_script(sid)
+        if content is None:
+            abort(404)
+        return content, 200, {"Content-Type": "text/plain; charset=utf-8"}
+    return send_from_directory("static", "view.html")
 
 @app.route("/raw/<sid>")
 def raw_script(sid):
