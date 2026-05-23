@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScriptHost — Roblox Script Hosting</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050508;
+    --surface: #0d0d14;
+    --border: #1e1e2e;
+    --accent: #7c3aed;
+    --accent2: #a855f7;
+    --red: #ef4444;
+    --green: #22c55e;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 16px 60px;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%; left: -20%;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -20%; right: -10%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(168,85,247,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .grid-bg {
+    position: fixed; inset: 0;
+    background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  .container { width: 100%; max-width: 780px; position: relative; z-index: 1; }
+  header { display: flex; align-items: center; gap: 14px; margin-bottom: 48px; }
+  .logo-mark {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 18px; font-weight: 700; color: white;
+  }
+  h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+  h1 span { color: var(--accent2); }
+  .subtitle { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .field-label {
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .field-label .dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: var(--mono); font-size: 13px; color: var(--text);
+    outline: none; transition: border-color 0.2s; margin-bottom: 20px;
+  }
+  input:focus { border-color: var(--accent); }
+  #codeArea {
+    width: 100%; min-height: 320px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: var(--mono); font-size: 13px; color: var(--text);
+    outline: none; resize: vertical; line-height: 1.6;
+    transition: border-color 0.2s; margin-bottom: 6px;
+  }
+  #codeArea:focus { border-color: var(--accent); }
+  .code-hint { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 20px; }
+  .pw-toggle {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+    cursor: pointer; user-select: none; margin-bottom: 20px; transition: color 0.2s;
+  }
+  .pw-toggle:hover { color: var(--text); }
+  .pw-toggle input { display: none; }
+  .toggle-box {
+    width: 34px; height: 18px;
+    background: var(--border); border-radius: 9px;
+    position: relative; transition: background 0.2s;
+  }
+  .toggle-box::after {
+    content: ''; position: absolute;
+    left: 3px; top: 3px; width: 12px; height: 12px;
+    background: white; border-radius: 50%; transition: transform 0.2s;
+  }
+  .pw-toggle.active .toggle-box { background: var(--accent); }
+  .pw-toggle.active .toggle-box::after { transform: translateX(16px); }
+  #pwField { display: none; }
+  .btn {
+    padding: 12px 28px; border: none; border-radius: 8px;
+    font-family: var(--sans); font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white; width: 100%; padding: 14px; font-size: 15px;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--green);
+    border-radius: 16px;
+    padding: 28px;
+    display: none;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .result-title {
+    font-family: var(--mono); font-size: 13px; font-weight: 700;
+    color: var(--green); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .result-title::before { content: '✓'; }
+
+  .copy-row {
+    margin-bottom: 12px;
+  }
+  .copy-row-label {
+    font-family: var(--mono); font-size: 10px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
+  }
+  .copy-box-wrap { display: flex; gap: 8px; }
+  .copy-box {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: var(--mono); font-size: 12px; color: var(--accent2);
+    word-break: break-all; cursor: pointer; transition: border-color 0.2s;
+  }
+  .copy-box:hover { border-color: var(--accent); }
+  .copy-btn {
+    padding: 10px 16px;
+    background: var(--border); border: none; border-radius: 8px;
+    color: var(--muted); font-family: var(--mono); font-size: 11px;
+    cursor: pointer; white-space: nowrap; transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .copy-btn:hover { background: var(--accent); color: white; }
+  .copy-btn.copied { background: var(--green); color: white; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  .error-msg { color: var(--red); font-family: var(--mono); font-size: 12px; margin-top: 10px; display: none; }
+  .spinner {
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3); border-top-color: white;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    vertical-align: middle; margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  footer { margin-top: 48px; font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: center; }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="container">
+  <header>
+    <div class="logo-mark">S</div>
+    <div>
+      <h1>Script<span>Host</span></h1>
+      <div class="subtitle">// roblox script hosting via loadstring</div>
+    </div>
+  </header>
+
+  <div class="card">
+    <div class="field-label"><span class="dot"></span>Script Title</div>
+    <input type="text" id="titleInput" placeholder="My Awesome Script" />
+
+    <div class="field-label"><span class="dot"></span>Lua Code</div>
+    <textarea id="codeArea" placeholder="-- Paste your Roblox script here&#10;print(&quot;Hello from ScriptHost!&quot;)"></textarea>
+    <div class="code-hint">Any Lua/LuaU code · works with loadstring(game:HttpGet(url))()</div>
+
+    <label class="pw-toggle" id="pwToggle">
+      <input type="checkbox" id="pwCheck">
+      <div class="toggle-box"></div>
+      Password protect (optional)
+    </label>
+
+    <div id="pwField">
+      <div class="field-label"><span class="dot"></span>Password</div>
+      <input type="password" id="pwInput" placeholder="Enter password..." />
+    </div>
+
+    <button class="btn btn-primary" id="uploadBtn" onclick="uploadScript()">Upload Script</button>
+    <div class="error-msg" id="errMsg"></div>
+  </div>
+
+  <div class="result-card" id="resultCard">
+    <div class="result-title">Script uploaded successfully</div>
+
+    <div class="copy-row">
+      <div class="copy-row-label">View Page</div>
+      <div class="copy-box-wrap">
+        <div class="copy-box" id="viewUrl" onclick="window.open(this.dataset.href, '_blank')"></div>
+        <button class="copy-btn" id="btn-view" onclick="copyAndMark('viewUrl', 'btn-view')">copy</button>
+      </div>
+    </div>
+
+    <div class="copy-row">
+      <div class="copy-row-label">Raw URL</div>
+      <div class="copy-box-wrap">
+        <div class="copy-box" id="rawUrl"></div>
+        <button class="copy-btn" id="btn-raw" onclick="copyAndMark('rawUrl', 'btn-raw')">copy</button>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="copy-row">
+      <div class="copy-row-label">loadstring — paste into executor</div>
+      <div class="copy-box-wrap">
+        <div class="copy-box" id="lsCode" style="color:#a78bfa"></div>
+        <button class="copy-btn" id="btn-ls" onclick="copyAndMark('lsCode', 'btn-ls')">copy</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>ScriptHost // loadstring(game:HttpGet(url))()</footer>
+</div>
+
+<script>
+const pwToggle = document.getElementById('pwToggle');
+const pwCheck = document.getElementById('pwCheck');
+
+pwToggle.addEventListener('click', () => {
+  pwCheck.checked = !pwCheck.checked;
+  pwToggle.classList.toggle('active', pwCheck.checked);
+  document.getElementById('pwField').style.display = pwCheck.checked ? 'block' : 'none';
+});
+
+async function uploadScript() {
+  const btn = document.getElementById('uploadBtn');
+  const err = document.getElementById('errMsg');
+  err.style.display = 'none';
+
+  const code = document.getElementById('codeArea').value.trim();
+  const title = document.getElementById('titleInput').value.trim() || 'Untitled Script';
+  const password = pwCheck.checked ? document.getElementById('pwInput').value : '';
+
+  if (!code) { showError('Code cannot be empty'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Uploading...';
+
+  try {
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({code, title, password})
+    });
+    const data = await res.json();
+    if (!res.ok) { showError(data.error || 'Upload failed'); return; }
+
+    const base = window.location.origin;
+    const rawFull = base + data.raw_url;
+    const viewFull = base + data.view_url;
+    const ls = `loadstring(game:HttpGet("${rawFull}"))()`;
+
+    const viewEl = document.getElementById('viewUrl');
+    viewEl.textContent = viewFull;
+    viewEl.dataset.href = viewFull;
+    document.getElementById('rawUrl').textContent = rawFull;
+    document.getElementById('lsCode').textContent = ls;
+
+    const card = document.getElementById('resultCard');
+    card.style.display = 'block';
+    card.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+  } catch(e) {
+    showError('Network error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Upload Script';
+  }
+}
+
+function copyAndMark(elId, btnId) {
+  const text = document.getElementById(elId).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById(btnId);
+    btn.textContent = 'copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+function showError(msg) {
+  const err = document.getElementById('errMsg');
+  err.textContent = msg;
+  err.style.display = 'block';
+  const btn = document.getElementById('uploadBtn');
+  btn.disabled = false;
+  btn.innerHTML = 'Upload Script';
+}
+</script>
+</body>
+</html>
